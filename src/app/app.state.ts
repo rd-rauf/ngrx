@@ -1,4 +1,4 @@
-import { Customer } from "./models/customer.model";
+import { Customer } from "./store/models/customer.model";
 
 export interface IAppState {
     readonly customer: Customer;

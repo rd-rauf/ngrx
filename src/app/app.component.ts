@@ -1,9 +1,11 @@
 import { Component } from '@angular/core';
-import { Store } from '@ngrx/store';
-import { Customer } from './models/customer.model';
+import { Store, select } from '@ngrx/store';
+import { Observable } from 'rxjs';
+
+import { Customer } from './store/models/customer.model';
 import { IAppState } from 'src/app/app.state';
 import * as CustomerActions from '../app/store/actions/customers.actions';
-import { Observable } from 'rxjs';
+import { selectCustomer } from './store/selectors/customer.selector';
 
 @Component({
   selector: 'app-root',
@@ -13,26 +15,34 @@ import { Observable } from 'rxjs';
 export class AppComponent {
 
   customer?: Customer = undefined;
-  customerObservable: Observable<Customer>;
+  // customerObservable: Observable<Customer>;
   counter: number = 1;
+  customerId?: string = "1";
 
   constructor(private store: Store<any>) {
-    this.customerObservable = this.store.select('customer');
-    this.subs();
+    // this.customerObservable = this.store.select('customer');
 
-    this.store.select(state => {
-      this.customer = state.customer;
-    });
+    this.store.pipe(select(selectCustomer))
+      .subscribe((customer: Customer) => {
+        this.customer = customer
+      });
+    // this.subs();
   }
 
-  private subs() {
-    this.customerObservable.subscribe(customer => {
-      this.customer = customer
+  /* subs() {
+    this.customerObservable.subscribe((customer: any) => {
+      this.customer = customer;
     });
-  }
+  } */
 
   getCustomer() {
-    this.counter ++;
-    this.store.dispatch({ type: CustomerActions.CUSTOMER_READACTION, payload: { name: 'Customer ' + this.counter } });
+    /* this.counter++;
+    this.store.dispatch({ type: CustomerActions.CUSTOMER_READACTION, payload: { name: 'Customer ' + this.counter } }); */
+
+    this.store.dispatch({ type: CustomerActions.CUSTOMERS_FETCHACTION, payload: { id: this.customerId } });
   }
+}
+
+interface Post {
+  title: string;
 }
